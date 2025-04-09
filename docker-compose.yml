@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  web: # 定義服務名稱
+    build: . # 指定 Dockerfile 所在路徑
+    container_name: fastapi_web # 指定容器名稱（不指定時，預設為 <資料夾名>_<服務名稱>_1）
+    ports:
+      - "8000:8000" # 將本機（左）8000 port 映射到容器內（右）8000 port
+    volumes:
+    # 將file掛載至container web內的Path
+      - .:/code
+      - ./requirements.txt:/code/requirements.txt
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - redis  # 確保 redis 先啟動
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # 如果是放在server上的資料庫，環境參數.env要放在env_file:<Path> OR 執行 docker compose --env-file <Path>.env up -d 
+      # environment: 
+      # - REDIS_HOST=${REDIS_HOST}
+      # - REDIS_PORT=${REDIS_PORT}
+
+  redis:
+    image: redis:7  # 使用官方 Redis 映像檔
+    container_name: my-redis # 指定容器名稱
+    ports:
+      - "6379:6379"  # 可選，通常開發環境需要，部署時可拿掉
