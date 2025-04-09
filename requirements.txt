@@ -1,3 +1,4 @@
 fastapi
-redis[standard]
+pytest
+redis
 uvicorn[standard]
