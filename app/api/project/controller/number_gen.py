@@ -15,8 +15,8 @@ class NumberGen():
 
     def get_id(self, args, redis_client):
         number_result = ''
-        first_char = args.get('first_char', '').upper()
-        gender = args.get('gender', '').lower()
+        first_char = (args.get('first_char') or 'A').upper()
+        gender = (args.get('gender') or 'female').lower()
 
         if first_char and gender:
             para_key = f"{first_char}-{gender}"

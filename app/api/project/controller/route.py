@@ -1,4 +1,5 @@
 import logging
+import string
 from fastapi import APIRouter, Depends, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -15,6 +16,17 @@ router = APIRouter(prefix='/project',
 
 @router.get("/gen_number/", response_model=public_model.Result, summary="身分證生成")
 def get_gen_num(request: Request, params: model.Project = Depends(model.Project)):
+    def _return_error():
+        result = {
+            "Data": dict(),
+            "rDesc": 'System Service Exception',
+            "rCode": '0005'
+        }
+        return JSONResponse(jsonable_encoder(result), status_code=422)
+    
+    if not (params.first_char in list(string.ascii_uppercase) or params.gender in ["female", "male"]):
+        return _return_error()
+    
     args_json = {
         "first_char": params.first_char,
         "gender": params.gender
